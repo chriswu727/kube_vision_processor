@@ -1,0 +1,100 @@
+# KubeVisionProcessor: Kubernetes-Based AI Image Processing Web App
+
+## 1. System Overview
+
+KubeVisionProcessor is a Kubernetes-based web application for AI-driven facial recognition processing. Key components include:
+
+- React frontend with Nginx reverse proxy
+- FastAPI backend for request handling
+- Redis for image caching
+- PostgreSQL for metadata storage
+- RabbitMQ for task queue management
+- GPU-enabled AI processing pods
+- MinIO for model registry and image storage
+- Prometheus/Grafana for monitoring
+
+## 2. System Architecture
+
+### Frontend & API Gateway
+- **React Frontend**: User interface for image upload and results
+- **Nginx Reverse Proxy**: Request routing to backend services
+
+### Image Ingestion & Preprocessing
+- **FastAPI Backend**: Image handling and validation
+- **Redis Cache**: Temporary image storage
+- **RabbitMQ**: Message queue for processing coordination
+
+### AI Processing & Model Management
+- **AI Processing Pods (GPU-Enabled)**:
+  - Facial Recognition Container
+  - Dynamic Model Loader
+  - MinIO-based model registry
+- **Load Balancer**: Intelligent task routing based on pod load
+
+### Storage & Metadata Management
+- **PostgreSQL**: Long-term metadata storage
+- **MinIO**:
+  - AI Model Registry
+  - Processed Image Storage
+
+### Autoscaling & GPU Scheduling
+- **HPA**: Dynamic pod scaling
+- **Cluster Autoscaler**: GPU node management
+- **Kubernetes GPU Scheduling**: Resource allocation
+
+### Monitoring & Logging
+- **Prometheus & Grafana**:
+  - Resource utilization tracking
+  - Real-time monitoring dashboards
+- **Rancher API** (Optional): External monitoring
+
+## 3. Key Kubernetes Resources
+
+### Frontend Layer
+- frontend-deployment.yaml
+- frontend-service.yaml
+- ingress.yaml
+
+### Backend Layer
+- backend-deployment.yaml
+- backend-service.yaml
+
+### Cache & Queue
+- redis-deployment.yaml
+- redis-service.yaml
+- rabbitmq-statefulset.yaml
+- rabbitmq-service.yaml
+
+### AI Processing
+- ai-processing-deployment.yaml
+- ai-processing-service.yaml
+
+### Storage
+- postgres-statefulset.yaml
+- postgres-service.yaml
+- minio-statefulset.yaml
+- minio-service.yaml
+
+### Monitoring
+- monitoring-deployment.yaml
+- monitoring-service.yaml
+
+### Load Balancing
+- load-balancer-config.yaml
+- load-balancer-deployment.yaml
+- load-balancer-service.yaml
+
+### Scaling & GPU
+- hpa.yaml
+- cluster-autoscaler-config.yaml
+- gpu-affinity.yaml
+- gpu-tolerations.yaml
+
+## 4. Project Goals & Learning Outcomes
+
+1. Kubernetes AI Workload Management
+2. Dynamic ML Model Loading
+3. Kubernetes Autoscaling & GPU Scheduling
+4. Microservices Architecture with Message Queuing
+5. Persistent Storage Implementation
+6. Monitoring & Logging Setup
