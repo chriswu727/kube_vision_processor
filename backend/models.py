@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, DateTime, create_engine
+from sqlalchemy import Column, Integer, String, DateTime, create_engine, JSON
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 import datetime
@@ -13,6 +13,9 @@ class Image(Base):
     cache_key = Column(String)
     format = Column(String)
     size = Column(String)
+    status = Column(String, default="uploaded")  # uploaded, processing, completed, failed
+    task_id = Column(String, nullable=True)
+    result = Column(JSON, nullable=True)
     uploaded_at = Column(DateTime, default=datetime.datetime.utcnow)
 
 # Database connection

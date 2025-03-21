@@ -1,63 +1,69 @@
 # KubeVisionProcessor
 
-A Kubernetes-based web application for AI-driven facial recognition processing.
+A Kubernetes-based microservices application for image processing with GPU acceleration. The system is designed to handle image uploads, process them using AI models, and manage the workflow through a distributed task queue.
 
-## Current Progress
+## System Overview
 
-### Completed Components
-1. ✅ Development Environment Setup
-   - Minikube cluster with GPU support
-   - Docker environment
-   - Kubernetes CLI (kubectl)
+This application demonstrates a modern microservices architecture where:
+- Images are temporarily cached for processing
+- Tasks are distributed through message queues
+- Processing status and results are tracked
+- GPU resources are utilized efficiently
 
-2. ✅ Core Services Implementation (Partial)
-   - FastAPI Backend
-     - Image upload endpoint
-     - Image retrieval endpoint
-     - Image listing endpoint
-   - Redis Cache
-     - Temporary image storage (1-hour TTL)
-   - PostgreSQL Database
-     - Image metadata storage
-     - Upload tracking
+### Core Components
 
+- **FastAPI Backend**: Handles API requests and GPU processing
+  - Manages image uploads and retrieval
+  - Coordinates with other services
+  - Utilizes GPU for processing tasks
 
-## Next Tasks (Detailed)
+- **Redis Cache**: Temporary storage system
+  - Caches uploaded images (1-hour TTL)
+  - Serves as Celery result backend
+  - Optimizes data access
 
-### 1. Message Queue Implementation
-- Set up RabbitMQ deployment
-  - Configure persistent storage
-  - Set up management interface
-  - Configure user access
-- Implement Celery worker
-  - Create task definitions
-  - Set up result backend (using existing Redis)
-  - Configure task routing
-- Integrate with FastAPI
-  - Add async task endpoints
-  - Implement task status tracking
-  - Add task result retrieval
+- **PostgreSQL**: Persistent metadata storage
+  - Tracks image information
+  - Stores processing status
+  - Maintains task history
 
-### 2. AI Processing Setup
-- Configure GPU access for worker pods
-- Implement AI model loading
-- Set up model inference pipeline
-- Add model result caching
+- **RabbitMQ & Celery**: Task queue system
+  - RabbitMQ manages message distribution
+  - Celery workers handle processing tasks
+  - Ensures scalable task processing
 
-### 3. Storage Enhancement
-- Set up MinIO for permanent storage
-  - Configure buckets for images
-  - Set up model storage
-  - Implement backup strategy
-- Update image flow
-  - Redis for processing cache
-  - MinIO for permanent storage
-  - PostgreSQL for metadata
+### Current Implementation
 
-### 4. Frontend Development
-- Create React application
-- Implement components:
-  - Image upload interface
-  - Processing status display
-  - Results visualization
-- Set up routing and state management
+The system currently supports:
+1. Image upload and temporary storage
+2. Task queuing and distribution
+3. Status tracking and result retrieval
+4. GPU resource allocation
+5. Basic processing simulation
+
+### API Endpoints
+
+- `POST /upload` - Store new image
+- `POST /process/{filename}` - Queue processing task
+- `GET /status/{filename}` - Check processing status
+- `GET /image/{filename}` - Retrieve cached image
+- `GET /images` - List all images
+- `GET /task/{task_id}` - Get task details
+
+## Next Development Phase
+
+1. AI Model Integration
+   - Implement actual GPU processing
+   - Add model inference pipeline
+   - Optimize GPU utilization
+
+2. Storage Enhancement
+   - Add permanent storage solution
+   - Implement backup strategy
+   - Optimize data flow
+
+3. Frontend Development
+   - Create user interface
+   - Add real-time status updates
+   - Display processing results
+

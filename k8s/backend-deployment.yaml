@@ -15,8 +15,17 @@ spec:
       containers:
       - name: backend
         image: backend:latest
+        imagePullPolicy: Never
         ports:
         - containerPort: 8000
+        resources:
+          limits:
+            nvidia.com/gpu: 1  # Request 1 GPU
+          requests:
+            nvidia.com/gpu: 1
+        env:
+        - name: NVIDIA_VISIBLE_DEVICES
+          value: "all"
 ---
 apiVersion: v1
 kind: Service
