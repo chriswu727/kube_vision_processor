@@ -13,6 +13,7 @@ class Image(Base):
     cache_key = Column(String)
     format = Column(String)
     size = Column(String)
+    image_type = Column(String)  # 'face' or 'object'
     status = Column(String, default="uploaded")  # uploaded, processing, completed, failed
     task_id = Column(String, nullable=True)
     result = Column(JSON, nullable=True)

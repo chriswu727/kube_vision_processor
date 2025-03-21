@@ -9,6 +9,8 @@ from sqlalchemy.orm import Session
 import models
 from typing import List
 from tasks import process_image
+from facenet_pytorch import MTCNN
+import torch
 
 app = FastAPI()
 
@@ -35,17 +37,28 @@ def get_db():
 async def startup_event():
     models.init_db()
 
+# Initialize MTCNN
+device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+mtcnn = MTCNN(device=device)
+
 @app.post("/upload")
 async def upload_image(file: UploadFile, db: Session = Depends(get_db)):
     try:
+        # Read and convert image
         contents = await file.read()
         image = Image.open(io.BytesIO(contents))
         
-        # Store in Redis
+        # Detect faces using MTCNN
+        boxes, _ = mtcnn.detect(image)
+        
+        # Determine image type
+        image_type = "face" if boxes is not None and len(boxes) > 0 else "object"
+        
+        # Store image in Redis
         image_key = f"image:{file.filename}"
         redis_client.setex(
             image_key,
-            3600,  # expire in 1 hour
+            3600,  # 1 hour TTL
             base64.b64encode(contents).decode()
         )
         
@@ -55,7 +68,8 @@ async def upload_image(file: UploadFile, db: Session = Depends(get_db)):
             cache_key=image_key,
             format=image.format,
             size=f"{image.size[0]}x{image.size[1]}",
-            status="uploaded"  # Add status field
+            image_type=image_type,  # New field
+            status="uploaded"
         )
         db.add(db_image)
         db.commit()
@@ -63,8 +77,10 @@ async def upload_image(file: UploadFile, db: Session = Depends(get_db)):
         return {
             "filename": file.filename,
             "cache_key": image_key,
-            "message": "Image uploaded. Ready for processing."
+            "image_type": image_type,
+            "status": "uploaded"
         }
+        
     except Exception as e:
         db.rollback()
         raise HTTPException(status_code=500, detail=str(e))
