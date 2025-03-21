@@ -1,10 +1,11 @@
 # KubeVisionProcessor
 
-A Kubernetes-based microservices application for image processing with GPU acceleration. The system is designed to handle image uploads, process them using AI models, and manage the workflow through a distributed task queue.
+A Kubernetes-based microservices application for image processing with GPU acceleration. The system is designed to handle image uploads, classify them as face or object images, and process them using different AI models.
 
 ## System Overview
 
 This application demonstrates a modern microservices architecture where:
+- Images are preprocessed to determine type (face/object)
 - Images are temporarily cached for processing
 - Tasks are distributed through message queues
 - Processing status and results are tracked
@@ -13,7 +14,9 @@ This application demonstrates a modern microservices architecture where:
 ### Core Components
 
 - **FastAPI Backend**: Handles API requests and GPU processing
-  - Manages image uploads and retrieval
+  - Manages image uploads and preprocessing
+  - Uses MTCNN for face detection
+  - Labels images as 'face' or 'object'
   - Coordinates with other services
   - Utilizes GPU for processing tasks
 
@@ -23,7 +26,7 @@ This application demonstrates a modern microservices architecture where:
   - Optimizes data access
 
 - **PostgreSQL**: Persistent metadata storage
-  - Tracks image information
+  - Tracks image information and type
   - Stores processing status
   - Maintains task history
 
@@ -35,15 +38,18 @@ This application demonstrates a modern microservices architecture where:
 ### Current Implementation
 
 The system currently supports:
-1. Image upload and temporary storage
-2. Task queuing and distribution
-3. Status tracking and result retrieval
-4. GPU resource allocation
-5. Basic processing simulation
+1. Image upload and preprocessing
+   - Face detection using MTCNN
+   - Image type labeling (face/object)
+2. Temporary image storage in Redis
+3. Metadata storage in PostgreSQL
+4. Task queuing and distribution
+5. Status tracking and result retrieval
+6. GPU resource allocation
 
 ### API Endpoints
 
-- `POST /upload` - Store new image
+- `POST /upload` - Upload and preprocess image
 - `POST /process/{filename}` - Queue processing task
 - `GET /status/{filename}` - Check processing status
 - `GET /image/{filename}` - Retrieve cached image
@@ -53,8 +59,9 @@ The system currently supports:
 ## Next Development Phase
 
 1. AI Model Integration
-   - Implement actual GPU processing
-   - Add model inference pipeline
+   - Implement face recognition for face images
+   - Implement CIFAR-10 classification for object images
+   - Dynamic model loading based on image type
    - Optimize GPU utilization
 
 2. Storage Enhancement
