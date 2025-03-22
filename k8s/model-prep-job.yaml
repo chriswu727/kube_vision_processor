@@ -1,0 +1,12 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: model-prep
+spec:
+  template:
+    spec:
+      containers:
+      - name: model-prep
+        image: model-prep:latest
+        imagePullPolicy: Never
+      restartPolicy: Never 
