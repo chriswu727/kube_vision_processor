@@ -11,3 +11,4 @@ flower==2.0.1  # For monitoring Celery tasks
 facenet-pytorch==2.5.3
 torch==2.0.1
 torchvision 
+minio
