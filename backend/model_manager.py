@@ -32,12 +32,11 @@ class ModelManager:
         
         # Image transforms
         self.transform = transforms.Compose([
-            transforms.Resize(256),
-            transforms.CenterCrop(224),
+            transforms.Resize(32),  # Match CIFAR-10 size
             transforms.ToTensor(),
             transforms.Normalize(
-                mean=[0.485, 0.456, 0.406],
-                std=[0.229, 0.224, 0.225]
+                mean=(0.4914, 0.4822, 0.4465),  # CIFAR-10 values
+                std=(0.2023, 0.1994, 0.2010)
             )
         ])
 
