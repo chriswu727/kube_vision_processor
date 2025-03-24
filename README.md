@@ -1,12 +1,13 @@
 # KubeVisionProcessor
 
-A Kubernetes-based microservices application for image processing with GPU acceleration. The system is designed to handle image uploads, classify them as face or object images, and process them using different AI models.
+A Kubernetes-based microservices application for image processing with GPU acceleration. The system is designed to handle image uploads, classify them as face or object images, and process them using different AI models dynamically.
 
 ## System Overview
 
 This application demonstrates a modern microservices architecture where:
 - Images are preprocessed to determine type (face/object)
 - Images are temporarily cached for processing
+- AI models are dynamically loaded from MinIO storage
 - Tasks are distributed through message queues
 - Processing status and results are tracked
 - GPU resources are utilized efficiently
@@ -20,6 +21,12 @@ This application demonstrates a modern microservices architecture where:
   - Coordinates with other services
   - Utilizes GPU for processing tasks
 
+- **MinIO Object Storage**: Model storage and management
+  - Stores trained AI models
+  - Enables dynamic model loading
+  - Supports model versioning
+  - Facilitates model updates without redeployment
+
 - **Redis Cache**: Temporary storage system
   - Caches uploaded images (1-hour TTL)
   - Serves as Celery result backend
@@ -29,23 +36,28 @@ This application demonstrates a modern microservices architecture where:
   - Tracks image information and type
   - Stores processing status
   - Maintains task history
+  - Auto-cleans expired image records
 
 - **RabbitMQ & Celery**: Task queue system
   - RabbitMQ manages message distribution
   - Celery workers handle processing tasks
+  - Dynamic model loading from MinIO
   - Ensures scalable task processing
 
-### Current Implementation
+### AI Models
 
-The system currently supports:
-1. Image upload and preprocessing
-   - Face detection using MTCNN
-   - Image type labeling (face/object)
-2. Temporary image storage in Redis
-3. Metadata storage in PostgreSQL
-4. Task queuing and distribution
-5. Status tracking and result retrieval
-6. GPU resource allocation
+1. Face Processing
+   - Uses FaceNet (Inception-ResNet-V1)
+   - Trained on VGGFace2 dataset
+   - Generates face embeddings for future recognition
+
+2. Object Classification
+   - Uses ResNet18 architecture
+   - Trained on CIFAR-10 dataset and saved to MinIO
+   - Classifies 10 object categories:
+     - airplane, automobile, bird, cat
+     - deer, dog, frog, horse, ship, truck
+   - GPU-accelerated training and inference
 
 ### API Endpoints
 
@@ -58,18 +70,12 @@ The system currently supports:
 
 ## Next Development Phase
 
-1. AI Model Integration
-   - Implement face recognition for face images
-   - Implement CIFAR-10 classification for object images
-   - Dynamic model loading based on image type
-   - Optimize GPU utilization
-
-2. Storage Enhancement
+1. Storage Enhancement
    - Add permanent storage solution
    - Implement backup strategy
    - Optimize data flow
 
-3. Frontend Development
+2. Frontend Development
    - Create user interface
    - Add real-time status updates
    - Display processing results
