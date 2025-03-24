@@ -18,11 +18,7 @@ spec:
         imagePullPolicy: Never
         ports:
         - containerPort: 8000
-        resources:
-          limits:
-            nvidia.com/gpu: 1  # Request 1 GPU
-          requests:
-            nvidia.com/gpu: 1
+        # Removed GPU resources - will use CPU
         env:
         - name: NVIDIA_VISIBLE_DEVICES
           value: "all"

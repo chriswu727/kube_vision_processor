@@ -87,24 +87,18 @@ async def upload_image(file: UploadFile, db: Session = Depends(get_db)):
 
 @app.post("/process/{filename}")
 async def process_image_request(filename: str, db: Session = Depends(get_db)):
-    # Get image metadata from PostgreSQL
-    db_image = db.query(models.Image).filter(models.Image.filename == filename).first()
-    if not db_image:
-        raise HTTPException(status_code=404, detail="Image not found")
-    
-    # Check if image exists in Redis
-    if not redis_client.exists(db_image.cache_key):
-        raise HTTPException(status_code=404, detail="Image expired from cache")
-    
-    # Start processing task
-    task = process_image.delay(db_image.cache_key, filename)
-    
-    # Update status in database
-    db_image.status = "processing"
-    db_image.task_id = task.id
-    db.commit()
-    
-    return {"task_id": task.id, "status": "processing"}
+    try:
+        # Get image metadata
+        db_image = db.query(models.Image).filter(models.Image.filename == filename).first()
+        if not db_image:
+            raise HTTPException(status_code=404, detail="Image not found")
+        
+        # Start celery task (update this line)
+        task = process_image.apply_async(args=[db_image.cache_key, filename])
+        
+        return {"task_id": task.id, "status": "processing"}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
 @app.get("/status/{filename}")
 async def get_processing_status(filename: str, db: Session = Depends(get_db)):

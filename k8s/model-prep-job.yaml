@@ -9,4 +9,18 @@ spec:
       - name: model-prep
         image: model-prep:latest
         imagePullPolicy: Never
+        resources:
+          limits:
+            memory: "8Gi"
+            nvidia.com/gpu: "1"
+          requests:
+            memory: "4Gi"
+        volumeMounts:
+        - name: dshm
+          mountPath: /dev/shm
+      volumes:
+      - name: dshm
+        emptyDir:
+          medium: Memory
+          sizeLimit: "1Gi"
       restartPolicy: Never 

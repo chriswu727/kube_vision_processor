@@ -16,4 +16,10 @@ spec:
       - name: celery
         image: backend:latest
         imagePullPolicy: Never
-        command: ["celery", "-A", "tasks", "worker", "--loglevel=info"] 
+        command: ["celery", "-A", "tasks", "worker", "--loglevel=info", "--pool=solo"]
+        resources:
+          limits:
+            nvidia.com/gpu: 1
+        env:
+        - name: NVIDIA_VISIBLE_DEVICES
+          value: "all" 

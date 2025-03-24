@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, DateTime, create_engine, JSON
+from sqlalchemy import Column, Integer, String, DateTime, create_engine, JSON, Float
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 import datetime
@@ -16,7 +16,8 @@ class Image(Base):
     image_type = Column(String)  # 'face' or 'object'
     status = Column(String, default="uploaded")  # uploaded, processing, completed, failed
     task_id = Column(String, nullable=True)
-    result = Column(JSON, nullable=True)
+    result = Column(JSON, nullable=True)  # Store model predictions
+    confidence = Column(Float, nullable=True)  # For object classification
     uploaded_at = Column(DateTime, default=datetime.datetime.utcnow)
 
 # Database connection
