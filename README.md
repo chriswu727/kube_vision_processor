@@ -12,6 +12,10 @@ This application demonstrates a modern microservices architecture where:
 - Processing status and results are tracked
 - GPU resources are utilized efficiently
 
+## Basic Workflow
+
+The system processes images through a streamlined pipeline: When an image is uploaded, it's immediately preprocessed using MTCNN for face detection and temporarily stored in Redis cache. The preprocessing result (face/object) along with other metadata is recorded in PostgreSQL. When processing is requested, the image is queued in RabbitMQ for either FaceNet (for face embedding generation) or ResNet18 (for CIFAR-10 object classification) based on its recorded type. These AI models are dynamically loaded from MinIO storage by Celery workers, which utilize GPU acceleration for inference. The workers process images from the queue and store results back in PostgreSQL. Throughout this process, the system maintains efficient resource usage with automatic cleanup of expired cache entries and proper GPU resource allocation.
+
 ### Core Components
 
 - **FastAPI Backend**: Handles API requests and GPU processing
